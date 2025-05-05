@@ -103,50 +103,36 @@ function startAnimation() {
 }
 
 async function callLogApi() {
-	const now = new Date().getTime();
-	const lastCall = localStorage.getItem('lastCall');
-	if (lastCall) {
-		const lastCallNb = Number(lastCall);
-		if (now - lastCallNb < 1800000) {
-			return;
-		}
-	}
-
 	try {
-		await fetch('https://main-server-u49f.onrender.com/api/v1/ks-solutions/logs', {
+		const params = new URLSearchParams(window.location.search);
+		const queryParams = {};
+		for (const [key, value] of params.entries()) {
+			queryParams[key] = value;
+		}
+
+		const payload = {
+			uuid: localStorage.getItem('uuid'),
+			screenWidth: window.screen.width,
+			screenHeight: window.screen.height,
+			deviceOrientation: screen.orientation?.type || 'unknown',
+			service: '6758b167f1ce4d064076b895',
+
+			platform: navigator.platform || 'unknown',
+			language: navigator.language || 'unknown',
+			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+			queryParams,
+			locationHref: location.href,
+		};
+
+		const response = await fetch('https://main-server-u49f.onrender.com/api/v1/ks-solutions/logs', {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(sendLogData()),
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload),
 		});
 
-		localStorage.setItem('lastCall', now.toString());
-	} catch (error) {}
-}
-
-// Function to send log data to the server
-function sendLogData() {
-	let uuid = localStorage.getItem('uuid');
-
-	if (!uuid) {
-		uuid = generateUUID();
+		const uuid = await response.text();
 		localStorage.setItem('uuid', uuid);
-	}
-
-	return {
-		uuid,
-		screenWidth: window.screen.width,
-		screenHeight: window.screen.height,
-		deviceOrientation: screen.orientation.type,
-		service: '6758b167f1ce4d064076b895',
-	};
+	} catch {}
 }
 
-function generateUUID() {
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-		const r = (Math.random() * 16) | 0,
-			v = c === 'x' ? r : (r & 0x3) | 0x8;
-		return v.toString(16);
-	});
-}
+callLogApi();
