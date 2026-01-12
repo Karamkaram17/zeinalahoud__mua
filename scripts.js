@@ -27,12 +27,131 @@ const totalSlides = slides.length;
 // Initialize
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
+	populateContent();
 	initializeYear();
 	initializeScrollAnimations();
 	initializeSlider();
 	initializeNavbarScroll();
 	callLogApi();
 });
+
+// ============================================
+// Populate Content from SERVICE_DATA
+// ============================================
+
+/**
+ * Populate all page content from SERVICE_DATA
+ */
+function populateContent() {
+	const data = SERVICE_DATA;
+
+	// Helper function to safely set text content
+	const setText = (selector, value) => {
+		const el = document.querySelector(selector);
+		if (el && value) el.textContent = value;
+	};
+
+	// Helper function to safely set innerHTML
+	const setHTML = (selector, value) => {
+		const el = document.querySelector(selector);
+		if (el && value) el.innerHTML = value;
+	};
+
+	// Helper function to safely set attribute
+	const setAttr = (selector, attr, value) => {
+		const el = document.querySelector(selector);
+		if (el && value) el.setAttribute(attr, value);
+	};
+
+	// Helper function to safely set href
+	const setHref = (selector, value) => {
+		const elements = document.querySelectorAll(selector);
+		elements.forEach((el) => {
+			if (el && value) el.setAttribute('href', value);
+		});
+	};
+
+	// Helper function to safely set image src
+	const setImg = (selector, value) => {
+		const el = document.querySelector(selector);
+		if (el && value) el.setAttribute('src', value);
+	};
+
+	// Brand
+	setText('.brand-name', data.brand_name);
+	setText('.footer-name', data.brand_name);
+
+	// Hero Section
+	setText('.hero-badge', data.hero_badge);
+	setHTML(
+		'.hero-title',
+		`${data.main_title.split(' ').slice(0, -1).join(' ')} <span class="highlight">${data.main_title.split(' ').slice(-1)[0]}</span>`,
+	);
+	setText('.hero-subtitle', data.main_subtitle);
+
+	// About Section
+	setText('#about .section-label', data.about_label);
+	setHTML('#about .section-title', data.about_title.replace(', ', ',<br>'));
+	setHTML('.about-text', data.about_content.replace('Make Up Forever', '<strong>Make Up Forever</strong>'));
+	setImg('.about-image img', data.about_img);
+
+	// Stats
+	const statNumbers = document.querySelectorAll('.stat-number');
+	const statLabels = document.querySelectorAll('.stat-label');
+	if (statNumbers[0]) statNumbers[0].textContent = data.stat_1_number;
+	if (statNumbers[1]) statNumbers[1].textContent = data.stat_2_number;
+	if (statNumbers[2]) statNumbers[2].textContent = data.stat_3_number;
+	if (statLabels[0]) statLabels[0].textContent = data.stat_1_label;
+	if (statLabels[1]) statLabels[1].textContent = data.stat_2_label;
+	if (statLabels[2]) statLabels[2].textContent = data.stat_3_label;
+
+	// Services Section
+	setText('#services .section-label', data.services_label);
+	setText('#services .section-title', data.services_title);
+	setText('#services .section-description', data.services_subtitle);
+
+	const serviceTitles = document.querySelectorAll('.service-title');
+	const serviceDescs = document.querySelectorAll('.service-description');
+	if (serviceTitles[0]) serviceTitles[0].textContent = data.service_1_title;
+	if (serviceTitles[1]) serviceTitles[1].textContent = data.service_2_title;
+	if (serviceTitles[2]) serviceTitles[2].textContent = data.service_3_title;
+	if (serviceDescs[0]) serviceDescs[0].textContent = data.service_1_description;
+	if (serviceDescs[1]) serviceDescs[1].textContent = data.service_2_description;
+	if (serviceDescs[2]) serviceDescs[2].textContent = data.service_3_description;
+
+	// Portfolio Section
+	setText('#clients .section-label', data.portfolio_label);
+	setText('#clients .section-title', data.portfolio_title);
+	setText('#clients .section-description', data.portfolio_subtitle);
+
+	const slides = document.querySelectorAll('.slide img');
+	if (slides[0] && data.clients_1_img) slides[0].src = data.clients_1_img;
+	if (slides[1] && data.clients_2_img) slides[1].src = data.clients_2_img;
+	if (slides[2] && data.clients_3_img) slides[2].src = data.clients_3_img;
+	if (slides[3] && data.clients_4_img) slides[3].src = data.clients_4_img;
+
+	// Pricing Section
+	setText('#price-list .section-label', data.pricing_label);
+	setText('#price-list .section-title', data.pricing_title);
+	setText('#price-list .section-description', data.pricing_subtitle);
+	setImg('.pricing-image', data.price_list_img);
+	setAttr('.btn-download', 'href', data.price_list_download);
+
+	// Contact Section
+	setText('.contact-info .section-label', data.contact_label);
+	setHTML('.contact-info .section-title', data.contact_title.replace(' Something', '<br>Something'));
+	setText('.contact-text', data.contact_text);
+
+	const contactItems = document.querySelectorAll('.contact-item span');
+	if (contactItems[0]) contactItems[0].textContent = data.location;
+	if (contactItems[1]) contactItems[1].textContent = data.phone;
+
+	// Social Links
+	setHref('.contact-btn.whatsapp', data.whatsapp_url);
+	setHref('.contact-btn.instagram', data.instagram_url);
+	setHref('.footer-social a[aria-label="WhatsApp"]', data.whatsapp_url);
+	setHref('.footer-social a[aria-label="Instagram"]', data.instagram_url);
+}
 
 // ============================================
 // Navigation Functions
@@ -311,7 +430,7 @@ async function callLogApi() {
 			screenWidth: window.screen.width,
 			screenHeight: window.screen.height,
 			deviceOrientation: screen.orientation?.type || 'unknown',
-			service: '6758b167f1ce4d064076b895',
+			service: SERVICE_DATA.serviceId,
 			platform: navigator.platform || 'unknown',
 			language: navigator.language || 'unknown',
 			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
