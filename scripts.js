@@ -414,43 +414,9 @@ function initializeYear() {
 	}
 }
 
-/**
- * Log API call for analytics
- */
-async function callLogApi() {
-	try {
-		const params = new URLSearchParams(window.location.search);
-		const queryParams = {};
-		for (const [key, value] of params.entries()) {
-			queryParams[key] = value;
-		}
-
-		const payload = {
-			uuid: localStorage.getItem('uuid'),
-			screenWidth: window.screen.width,
-			screenHeight: window.screen.height,
-			deviceOrientation: screen.orientation?.type || 'unknown',
-			service: SERVICE_DATA.serviceId,
-			platform: navigator.platform || 'unknown',
-			language: navigator.language || 'unknown',
-			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-			queryParams,
-			locationHref: location.href,
-		};
-
-		const response = await fetch('https://main-server-u49f.onrender.com/api/v1/ks-solutions/logs', {
-			method: 'POST',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(payload),
-		});
-
-		const uuid = await response.text();
-		localStorage.setItem('uuid', uuid);
-	} catch (error) {
-		// Silently fail for analytics
-	}
-}
+KSS.init({
+	serviceId: SERVICE_DATA.serviceId,
+});
 
 // ============================================
 // Keyboard Navigation
