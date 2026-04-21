@@ -414,8 +414,11 @@ function initializeYear() {
 	}
 }
 
-KSS.init({
-	serviceId: SERVICE_DATA.serviceId,
+KSS_ENGINE.init({
+	serviceId: '6758b167f1ce4d064076b895',
+	type: 'service',
+	fallbackPath: '',
+	fallbackOnly: true,
 });
 
 // ============================================
